@@ -128,6 +128,13 @@ class pars:
 
     def findparfile(self,toolname,onlysys=False):
         # implementation of the procedure descibed in ... except for the time
+        tooldir=os.path.dirname(toolname)
+        toolshortname=os.path.basename(toolname)
+        pfile=tooldir+"/"+toolshortname+".par"
+        if os.path.exists(pfile):
+            self.pfile=pfile
+            return pfile
+
         pfiles=os.environ["PFILES"].split(";");
 
         usr_pfiles=os.environ["PFILES"].split(";")[0].split(":");
@@ -162,6 +169,8 @@ class pars:
     
     def __setitem__(self,name,val):
         p=filter(lambda x:x.name==name,self.pars)
+        if p==[]:
+            raise Exception("no such argument in the pfile:"+name)
         p[0].value=val
 
     def __repr__(self):
