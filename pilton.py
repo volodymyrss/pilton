@@ -193,6 +193,9 @@ class heatool:
         if envup is not None: env.update(envup)
         self.environ=env
 
+        tooldir=os.path.dirname(toolname)
+        self.environ['CFITSIO_INCLUDE_FILES']=tooldir+":"+self.environ['CFITSIO_INCLUDE_FILES']
+
         self.getpars()
         self.cwd=os.getcwd() if wd is None else wd
         for arg in args:
