@@ -49,8 +49,11 @@ class par:
         return self.name
 
 
-    def mkarg(self):
-        return "%s=%s"%(self.name,str(self.value))
+    def mkarg(self,quote=False):
+        if quote:
+            return "%s=\"%s\""%(self.name,str(self.value))
+        else:
+            return "%s=%s"%(self.name,str(self.value))
     
     def __repr__(self):
         return bcolors.render("{BLUE}%s{/} == {YEL}%s{/} (%s)"%(self.name,repr(self.value),self.prompt))
@@ -158,8 +161,8 @@ class pars:
         self.pfile=None
         raise Exception("no parfile!")
 
-    def mkargs(self):
-        return [par.mkarg() for par in self.pars]
+    def mkargs(self,quote=False):
+        return [par.mkarg(quote=quote) for par in self.pars]
         
     def fromtoolname(self,toolname,onlysys=False):
         self.fromparfile(self.findparfile(toolname,onlysys=onlysys))
@@ -212,18 +215,23 @@ class heatool:
     def __setitem__(self,name,val):
         self.pars[name]=val
     
-    def run(self,pretend=False,env=None):
+    def run(self,pretend=False,env=None,strace=None):
         print bcolors.render("{YEL} work dir to "+self.cwd+"{/}")
         owd=get_cwd()
         os.chdir(self.cwd)
 
         print bcolors.render("{YEL}"+str([self.toolname]+self.pars.mkargs())+"{/}")
-        print bcolors.render("{YEL}"+" ".join([self.toolname]+self.pars.mkargs())+"{/}")
+        print bcolors.render("{YEL}"+" ".join([self.toolname]+self.pars.mkargs(quote=True))+"{/}")
         if pretend:
             print "not actually running it"
             return
         if env is None: env=self.environ
-        pr=subprocess.Popen([self.toolname]+self.pars.mkargs(),env=env)
+
+        if strace is not None:
+            tr=["strace"]
+        else:
+            tr=[]
+        pr=subprocess.Popen(tr+[self.toolname]+self.pars.mkargs(),env=env)
         pr.wait()
 
         os.chdir(owd)
