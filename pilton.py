@@ -129,7 +129,7 @@ class pars:
                     print ex.args
                 
 
-    def findparfile(self,toolname,onlysys=False):
+    def findparfile(self,toolname,onlysys=True):
         # implementation of the procedure descibed in ... except for the time
         tooldir=os.path.dirname(toolname)
         toolshortname=os.path.basename(toolname)
@@ -164,7 +164,7 @@ class pars:
     def mkargs(self,quote=False):
         return [par.mkarg(quote=quote) for par in self.pars]
         
-    def fromtoolname(self,toolname,onlysys=False):
+    def fromtoolname(self,toolname,onlysys=True):
         self.fromparfile(self.findparfile(toolname,onlysys=onlysys))
 
     def __getitem__(self,name):
@@ -188,7 +188,7 @@ class HEAToolException(Exception):
         return "HEAtool "+self.toolname+" failed with %i"%self.code
 
 class heatool:
-    def __init__(self,toolname,wd=None,onlysyspar=False,env=None,envup={},**args):
+    def __init__(self,toolname,wd=None,onlysyspar=True,env=None,envup={},**args):
         self.toolname=toolname
         self.onlysyspar=onlysyspar
 
@@ -215,7 +215,7 @@ class heatool:
     def __setitem__(self,name,val):
         self.pars[name]=val
     
-    def run(self,pretend=False,env=None,strace=None):
+    def run(self,pretend=False,env=None,strace=None,stdout=None):
         print bcolors.render("{YEL} work dir to "+self.cwd+"{/}")
         owd=get_cwd()
         os.chdir(self.cwd)
@@ -231,7 +231,15 @@ class heatool:
             tr=["strace"]
         else:
             tr=[]
-        pr=subprocess.Popen(tr+[self.toolname]+self.pars.mkargs(),env=env)
+
+        pr=subprocess.Popen(tr+[self.toolname]+self.pars.mkargs(),env=env,stdout=subprocess.PIPE,stderr=subprocess.STDOUT, bufsize=0 ) # separate?..
+
+        while True:
+            line = pr.stdout.readline()
+            if not line:
+                break
+            print '{log:heatool}',line,
+        
         pr.wait()
 
         os.chdir(owd)
