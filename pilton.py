@@ -1,5 +1,5 @@
 
-import sys,os
+import sys,os,time,glob
 import subprocess
 import re
 import bcolors
@@ -101,16 +101,21 @@ class idx(parvalue):
 
 def findafile(path,filename,first=True):
     files=[]
-    #print path,filename
+    print "find a file:",path,filename
     for dir in path:
         cpath=dir+"/"+filename
+        print "try as",cpath
+        os.system("ls "+cpath)
         if os.path.isfile(cpath):
             if first:
+                print "found!",cpath
                 return cpath
             else:
                 files.append(cpath)
     if first or files==[]:
+        print "no good..",files
         return None
+    print "found many",files
     return files
 
 class pars:
@@ -159,13 +164,30 @@ class pars:
             return self.pfile
 
         self.pfile=None
-        raise Exception("no parfile!")
+        print "failed to open parfile"
+        print "PFILES:",os.environ["PFILES"]
+        print "toolsdir:",tooldir
+
+        os.system("hostname") ####!!!!
+        os.system("ls /workdir/soft/astrohe/osa/10.0/x86_64/osa/pfiles") ####!!!
+        raise Exception("no parfile: no tool?!")
 
     def mkargs(self,quote=False):
         return [par.mkarg(quote=quote) for par in self.pars]
         
     def fromtoolname(self,toolname,onlysys=True):
-        self.fromparfile(self.findparfile(toolname,onlysys=onlysys))
+        ex=None
+        for i in range(5):
+            try:
+                self.fromparfile(self.findparfile(toolname,onlysys=onlysys))
+            except Exception as e:
+                print "unable to access par file!",e
+                ex=e
+                time.sleep(1)
+            else:
+                return
+        raise ex
+                
 
     def __getitem__(self,name):
         return filter(lambda x:x.name==name,self.pars)[0]
@@ -215,7 +237,7 @@ class heatool:
     def __setitem__(self,name,val):
         self.pars[name]=val
     
-    def run(self,pretend=False,env=None,strace=None,stdout=None):
+    def run(self,pretend=False,env=None,strace=None,stdout=None,pfileschroot=True):
         print bcolors.render("{YEL} work dir to "+self.cwd+"{/}")
         owd=get_cwd()
         os.chdir(self.cwd)
@@ -232,15 +254,34 @@ class heatool:
         else:
             tr=[]
 
-        pr=subprocess.Popen(tr+[self.toolname]+self.pars.mkargs(),env=env,stdout=subprocess.PIPE,stderr=subprocess.STDOUT, bufsize=0 ) # separate?..
 
+        if pfileschroot:
+            print "requested to create temporary user pfiles directory"
+            pfiles_user_temp=tempfile.mkdtemp(os.path.basename(self.pars.pfile))
+            pf_env=dict(PFILES=pfiles_user_temp+";"+os.path.dirname(self.pars.pfile))
+        else:
+            pf_env=dict(PFILES=os.path.dirname(self.pars.pfile)) # how did this even work?..
+
+
+        print "setting PFILES to",pf_env['PFILES']
+        pr=subprocess.Popen(tr+[self.toolname]+self.pars.mkargs(),env=dict(env.items()+pf_env.items()),stdout=subprocess.PIPE,stderr=subprocess.STDOUT, bufsize=0 ) # separate?..
+
+        all_output=""
         while True:
             line = pr.stdout.readline()
             if not line:
                 break
             print '{log:heatool}',line,
+            all_output+=line
+
+        self.output=all_output
         
         pr.wait()
+        
+        if pfileschroot:
+            for tupfile in glob.glob(pfiles_user_temp+"/*.par"):
+                os.remove(tupfile)
+            os.rmdir(pfiles_user_temp)
 
         os.chdir(owd)
         if pr.returncode!=0:
@@ -301,6 +342,10 @@ class osa_analysis:
         
 
 def get_cwd():
+    return os.getcwd()
+
+# testtesttest
+
     tf=tempfile.NamedTemporaryFile()
     ppw=subprocess.Popen(["pwd"],stdout=tf)
     ppw.wait()
