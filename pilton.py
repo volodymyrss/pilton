@@ -255,6 +255,8 @@ class heatool:
             tr=[]
 
 
+        env['HEADASPROMPT']="/dev/null"
+
         if pfileschroot:
             print "requested to create temporary user pfiles directory"
             pfiles_user_temp=tempfile.mkdtemp(os.path.basename(self.pars.pfile))
