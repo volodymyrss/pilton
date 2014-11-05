@@ -101,21 +101,21 @@ class idx(parvalue):
 
 def findafile(path,filename,first=True):
     files=[]
-    print "find a file:",path,filename
+#    print "find a file:",path,filename
     for dir in path:
         cpath=dir+"/"+filename
-        print "try as",cpath
-        os.system("ls "+cpath)
+        #print "try as",cpath
+        #os.system("ls "+cpath)
         if os.path.isfile(cpath):
             if first:
-                print "found!",cpath
+ #               print "found!",cpath
                 return cpath
             else:
                 files.append(cpath)
     if first or files==[]:
-        print "no good..",files
+  #      print "no good..",files
         return None
-    print "found many",files
+  #  print "found many",files
     return files
 
 class pars:
@@ -129,9 +129,10 @@ class pars:
                 try:
                     p=par(parline=line)
                     self.pars.append(p)
-                    print "new par",p
+                    #print "new par",p
                 except Exception as ex:
-                    print ex.args
+                 #   print ex.args
+                    pass
                 
 
     def findparfile(self,toolname,onlysys=True):
@@ -168,8 +169,8 @@ class pars:
         print "PFILES:",os.environ["PFILES"]
         print "toolsdir:",tooldir
 
-        os.system("hostname") ####!!!!
-        os.system("ls /workdir/soft/astrohe/osa/10.0/x86_64/osa/pfiles") ####!!!
+        #os.system("hostname") ####!!!!
+        #os.system("ls /workdir/soft/astrohe/osa/10.0/x86_64/osa/pfiles") ####!!!
         raise Exception("no parfile: no tool?!")
 
     def mkargs(self,quote=False):
@@ -181,7 +182,7 @@ class pars:
             try:
                 self.fromparfile(self.findparfile(toolname,onlysys=onlysys))
             except Exception as e:
-                print "unable to access par file!",e
+                #print "unable to access par file!",e
                 ex=e
                 time.sleep(1)
             else:
@@ -238,11 +239,11 @@ class heatool:
         self.pars[name]=val
     
     def run(self,pretend=False,env=None,strace=None,stdout=None,pfileschroot=True):
-        print bcolors.render("{YEL} work dir to "+self.cwd+"{/}")
+        #print bcolors.render("{YEL} work dir to "+self.cwd+"{/}")
         owd=get_cwd()
         os.chdir(self.cwd)
 
-        print bcolors.render("{YEL}"+str([self.toolname]+self.pars.mkargs())+"{/}")
+       # print bcolors.render("{YEL}"+str([self.toolname]+self.pars.mkargs())+"{/}")
         print bcolors.render("{YEL}"+" ".join([self.toolname]+self.pars.mkargs(quote=True))+"{/}")
         if pretend:
             print "not actually running it"
@@ -258,14 +259,14 @@ class heatool:
         env['HEADASPROMPT']="/dev/null"
 
         if pfileschroot:
-            print "requested to create temporary user pfiles directory"
+            #print "requested to create temporary user pfiles directory"
             pfiles_user_temp=tempfile.mkdtemp(os.path.basename(self.pars.pfile))
             pf_env=dict(PFILES=pfiles_user_temp+";"+os.path.dirname(self.pars.pfile))
         else:
             pf_env=dict(PFILES=os.path.dirname(self.pars.pfile)) # how did this even work?..
 
 
-        print "setting PFILES to",pf_env['PFILES']
+        #print "setting PFILES to",pf_env['PFILES']
         pr=subprocess.Popen(tr+[self.toolname]+self.pars.mkargs(),env=dict(env.items()+pf_env.items()),stdout=subprocess.PIPE,stderr=subprocess.STDOUT, bufsize=0 ) # separate?..
 
         all_output=""
