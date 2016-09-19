@@ -5,7 +5,6 @@ import re
 import bcolors
 import tempfile
 
-print os.environ['PFILES']
 
 excecution_root=None
 
@@ -144,11 +143,13 @@ class pars:
             self.pfile=pfile
             return pfile
 
-        pfiles=os.environ["PFILES"].split(";");
+        pfiles_str=os.environ["PFILES"] if "PFILES" in os.environ else ""
 
-        usr_pfiles=os.environ["PFILES"].split(";")[0].split(":");
+        pfiles=pfiles_str.split(";");
+
+        usr_pfiles=pfiles_str.split(";")[0].split(":");
         if len(pfiles)==2:
-            sys_pfiles=os.environ["PFILES"].split(";")[1].split(":");
+            sys_pfiles=pfiles_str.split(";")[1].split(":");
         else:
             sys_pfiles=[]
 
@@ -166,7 +167,7 @@ class pars:
 
         self.pfile=None
         print "failed to open parfile"
-        print "PFILES:",os.environ["PFILES"]
+        print "PFILES:",pfiles_str
         print "toolsdir:",tooldir
 
         #os.system("hostname") ####!!!!
