@@ -224,6 +224,10 @@ class heatool:
         
         self.environ['CFITSIO_INCLUDE_FILES']=tooldir+(":"+self.environ['CFITSIO_INCLUDE_FILES'] if 'CFITSIO_INCLUDE_FILES' in self.environ else "")
 
+        if tooldir!="":
+            self.environ['CFITSIO_INCLUDE_FILES']=tooldir+":"+self.environ['CFITSIO_INCLUDE_FILES']
+            print "CFITSIO_INCLUDE_FILES:",self.environ['CFITSIO_INCLUDE_FILES']
+
         self.getpars()
         self.cwd=os.getcwd() if wd is None else wd
         for arg in args:
@@ -240,7 +244,7 @@ class heatool:
     def __setitem__(self,name,val):
         self.pars[name]=val
     
-    def run(self,pretend=False,env=None,strace=None,stdout=None,pfileschroot=True):
+    def run(self,pretend=False,envup=None,env=None,strace=None,stdout=None,pfileschroot=True):
         #print bcolors.render("{YEL} work dir to "+self.cwd+"{/}")
         owd=get_cwd()
         os.chdir(self.cwd)
@@ -251,6 +255,7 @@ class heatool:
             print "not actually running it"
             return
         if env is None: env=self.environ
+        if envup is not None: env.update(envup)
 
         if strace is not None:
             tr=["strace"]
