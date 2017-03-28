@@ -273,7 +273,7 @@ class heatool:
             pf_env=dict(PFILES=os.path.dirname(self.pars.pfile)) # how did this even work?..
 
 
-        #print "setting PFILES to",pf_env['PFILES']
+        print "setting PFILES to",pf_env['PFILES']
         pr=subprocess.Popen(tr+[self.toolname]+self.pars.mkargs(),env=dict(env.items()+pf_env.items()),stdout=subprocess.PIPE,stderr=subprocess.STDOUT, bufsize=0 ) # separate?..
 
         all_output=""

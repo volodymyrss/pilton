@@ -3,7 +3,7 @@ from distutils.core import setup
 setup(
         name='pilton',
         version='1.0',
-        py_modules= ['pilton'],
+        py_modules= ['pilton','bcolors'],
         package_data     = {
             "": [
                 "*.txt",
