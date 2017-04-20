@@ -244,7 +244,7 @@ class heatool:
     def __setitem__(self,name,val):
         self.pars[name]=val
     
-    def run(self,pretend=False,envup=None,env=None,strace=None,stdout=None,pfileschroot=True):
+    def run(self,pretend=False,envup=None,env=None,strace=None,stdout=None,pfileschroot=True,quiet=False):
         #print bcolors.render("{YEL} work dir to "+self.cwd+"{/}")
         owd=get_cwd()
         os.chdir(self.cwd)
@@ -277,12 +277,14 @@ class heatool:
         pr=subprocess.Popen(tr+[self.toolname]+self.pars.mkargs(),env=dict(env.items()+pf_env.items()),stdout=subprocess.PIPE,stderr=subprocess.STDOUT, bufsize=0 ) # separate?..
 
         all_output=""
-        while True:
-            line = pr.stdout.readline()
-            if not line:
-                break
-            print '{log:heatool}',line,
-            all_output+=line
+
+        if not quiet:
+            while True:
+                line = pr.stdout.readline()
+                if not line:
+                    break
+                print '{log:heatool}',line,
+                all_output+=line
 
         self.output=all_output
         
