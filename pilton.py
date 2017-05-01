@@ -299,7 +299,7 @@ class heatool:
                 line = pr.stdout.readline()
                 if not line:
                     break
-                log('{log:heatool}',line,)
+                log('{log:heatool}',line,logtype="info")
                 all_output+=line
 
         self.output=all_output
