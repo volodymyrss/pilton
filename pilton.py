@@ -18,11 +18,18 @@ logger.setLevel(logging.INFO)
 
 excecution_root = None
 
+use_logger=False
 
-def log(*args, **kwargs):
-    logtype = 'debug' if 'logtype' not in kwargs else kwargs['logtype']
-    sep = ' ' if 'sep' not in kwargs else kwargs['sep']
-    getattr(logger, logtype)(sep.join(str(a) for a in args))
+if use_logger:
+    def log(*args, **kwargs):
+        logtype = 'debug' if 'logtype' not in kwargs else kwargs['logtype']
+        sep = ' ' if 'sep' not in kwargs else kwargs['sep']
+        getattr(logger, logtype)(sep.join(str(a) for a in args))
+else:
+    def log(*args, **kwargs):
+        logtype = 'debug' if 'logtype' not in kwargs else kwargs['logtype']
+        sep = ' ' if 'sep' not in kwargs else kwargs['sep']
+        print sep.join(str(a) for a in args)
 
 class par:
     def __init__(self, value=None, parline=None):
@@ -299,7 +306,7 @@ class heatool:
                 line = pr.stdout.readline()
                 if not line:
                     break
-                log('{log:heatool}',line,logtype="info")
+                log(line,logtype="info")
                 all_output+=line
 
         self.output=all_output
