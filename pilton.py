@@ -306,7 +306,7 @@ class heatool:
                 line = pr.stdout.readline()
                 if not line:
                     break
-                log(line,logtype="info")
+                log(line.strip(),logtype="info")
                 all_output+=line
 
         self.output=all_output
