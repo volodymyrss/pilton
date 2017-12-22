@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import sys
 import os
 import time
@@ -29,7 +31,7 @@ else:
     def log(*args, **kwargs):
         logtype = 'debug' if 'logtype' not in kwargs else kwargs['logtype']
         sep = ' ' if 'sep' not in kwargs else kwargs['sep']
-        print sep.join(str(a) for a in args)
+        print(sep.join(str(a) for a in args))
 
 class par:
     def __init__(self, value=None, parline=None):
