@@ -18,8 +18,6 @@ FORMAT = "[%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s"
 logging.basicConfig(format=FORMAT)
 logger.setLevel(logging.INFO)
 
-excecution_root = None
-
 use_logger=False
 
 if use_logger:
@@ -245,13 +243,19 @@ class heatool:
         if envup is not None: env.update(envup)
         self.environ=env
 
-        tooldir=os.path.dirname(toolname)
+        cfitsio_path_collection = []
 
-        self.environ['CFITSIO_INCLUDE_FILES']=tooldir+(":"+self.environ['CFITSIO_INCLUDE_FILES'] if 'CFITSIO_INCLUDE_FILES' in self.environ else "")
+        tooldir = os.path.dirname(toolname)
+        if tooldir != "":
+            cfitsio_path_collection.append(tooldir)
 
-        if tooldir!="":
-            self.environ['CFITSIO_INCLUDE_FILES']=tooldir+":"+self.environ['CFITSIO_INCLUDE_FILES']
-            log("CFITSIO_INCLUDE_FILES:",self.environ['CFITSIO_INCLUDE_FILES'])
+        if 'CFITSIO_INCLUDE_FILES' in self.environ:
+            cfitsio_path_collection.append(self.environ['CFITSIO_INCLUDE_FILES'])
+
+            self.environ['CFITSIO_INCLUDE_FILES'] 
+
+        self.environ['CFITSIO_INCLUDE_FILES'] = ":".join(cfitsio_path_collection)
+        log("CFITSIO_INCLUDE_FILES:", self.environ['CFITSIO_INCLUDE_FILES'])
 
         self.getpars()
         self.cwd=os.getcwd() if wd is None else wd
