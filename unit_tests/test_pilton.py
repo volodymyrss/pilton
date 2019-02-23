@@ -22,7 +22,7 @@ class TestStringMethods(unittest.TestCase):
         import os
 
         CFITSIO_INCLUDE_FILES = os.environ['CFITSIO_INCLUDE_FILES']
-        print("CFITSIO_INCLUDE_FILES before",CFITSIO_INCLUDE_FILES)
+        print(("CFITSIO_INCLUDE_FILES before",CFITSIO_INCLUDE_FILES))
 
         pt=pilton.heatool("converttime")
         pt['informat']="IJD"
@@ -31,7 +31,7 @@ class TestStringMethods(unittest.TestCase):
         pt.run()
         
         CFITSIO_INCLUDE_FILES = os.environ['CFITSIO_INCLUDE_FILES']
-        print("CFITSIO_INCLUDE_FILES after",CFITSIO_INCLUDE_FILES)
+        print(("CFITSIO_INCLUDE_FILES after",CFITSIO_INCLUDE_FILES))
 
 
         self.assertFalse(re.search("2008-03-18T23:58:54.815",pt.output) is None)
