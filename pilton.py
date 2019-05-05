@@ -310,7 +310,7 @@ class heatool:
 
         if not quiet:
             while True:
-                line = pr.stdout.readline()
+                line = pr.stdout.readline().decode()
                 if not line:
                     break
                 log(line.strip(),logtype="info")
