@@ -147,7 +147,7 @@ class pars:
 
     def fromparfile(self, parfilename):
         log("from parfile:", parfilename, logtype="debug")
-        for line in open(self.pfile, "rn"):
+        for line in open(self.pfile, "rb"):
             line = line.decode('utf-8', 'ignore')
 
             if not re.match("^#", line) and line != "":
