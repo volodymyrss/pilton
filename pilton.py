@@ -153,8 +153,7 @@ class pars:
                     self.pars.append(p)
                     # log("new par",p)
                 except Exception as ex:
-                    #   log(ex.args)
-                    pass
+                    log("faild to load parfile:", ex.args)
 
 
     def findparfile(self,toolname,onlysys=True):
