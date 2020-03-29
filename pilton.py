@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 
 import sys
 import os
@@ -8,6 +8,7 @@ import subprocess
 import re
 import bcolors
 import tempfile
+from functools import reduce
 
 excecution_root = None
 
@@ -214,10 +215,10 @@ class pars:
 
 
     def __getitem__(self,name):
-        return filter(lambda x:x.name==name,self.pars)[0]
+        return [x for x in self.pars if x.name==name][0]
 
     def __setitem__(self,name,val):
-        p=filter(lambda x:x.name==name,self.pars)
+        p=[x for x in self.pars if x.name==name]
         if p==[]:
             raise Exception("no such argument in the pfile:"+name)
         p[0].value=val
@@ -302,13 +303,13 @@ class heatool:
 
 
         log("setting PFILES to",pf_env['PFILES'])
-        pr=subprocess.Popen(tr+[self.toolname]+self.pars.mkargs(),env=dict(env.items()+pf_env.items()),stdout=subprocess.PIPE,stderr=subprocess.STDOUT, bufsize=0 ) # separate?..
+        pr=subprocess.Popen(tr+[self.toolname]+self.pars.mkargs(),env=dict(list(env.items())+list(pf_env.items())),stdout=subprocess.PIPE,stderr=subprocess.STDOUT, bufsize=0 ) # separate?..
 
         all_output=""
 
         if not quiet:
             while True:
-                line = pr.stdout.readline()
+                line = pr.stdout.readline().decode()
                 if not line:
                     break
                 log(line.strip(),logtype="info")
