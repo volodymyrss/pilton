@@ -249,14 +249,26 @@ class heatool:
 
         tooldir = os.path.dirname(toolname)
         if tooldir != "":
+            log("CFITSIO_INCLUDE_FILES including tool:", tooldir)
             cfitsio_path_collection.append(tooldir)
 
         if 'CFITSIO_INCLUDE_FILES' in self.environ:
+            log("CFITSIO_INCLUDE_FILES including env:", self.environ['CFITSIO_INCLUDE_FILES'])
             cfitsio_path_collection.append(self.environ['CFITSIO_INCLUDE_FILES'])
 
-            self.environ['CFITSIO_INCLUDE_FILES'] 
 
         self.environ['CFITSIO_INCLUDE_FILES'] = ":".join(cfitsio_path_collection)
+
+        cfitsio_path_collection = []
+        for cfitsio_entry in self.environ['CFITSIO_INCLUDE_FILES'].split(":"):
+            if len(cfitsio_path_collection) == 0 or cfitsio_entry != cfitsio_path_collection[-1]:
+                cfitsio_path_collection.append(cfitsio_entry)
+                log("CFITSIO_INCLUDE_FILES keeping entry:", cfitsio_entry)
+            else:
+                log("CFITSIO_INCLUDE_FILES SKIPing entry:", cfitsio_entry)
+
+        self.environ['CFITSIO_INCLUDE_FILES'] = ":".join(cfitsio_path_collection)
+
         log("CFITSIO_INCLUDE_FILES:", self.environ['CFITSIO_INCLUDE_FILES'])
 
         self.getpars()
