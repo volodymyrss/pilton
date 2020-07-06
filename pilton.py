@@ -16,15 +16,14 @@ import logging
 
 logger = logging.getLogger('root')
 FORMAT = "[%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s"
-logging.basicConfig(format=FORMAT)
-logger.setLevel(logging.INFO)
+logging.basicConfig(format=FORMAT, level=logging.INFO)
 
 use_logger=False
 
 if use_logger:
     def log(*args, **kwargs):
         logtype = 'debug' if 'logtype' not in kwargs else kwargs['logtype']
-        sep = ' ' if 'sep' not in kwargs else kwargs['sep']
+        sep = kwargs.get('sep', ' ')
         getattr(logger, logtype)(sep.join(str(a) for a in args))
 else:
     def log(*args, **kwargs):
@@ -154,9 +153,8 @@ class pars:
                 try:
                     p = par(parline=line)
                     self.pars.append(p)
-                    # log("new par",p)
                 except Exception as ex:
-                    log("faild to load parfile:", ex.args)
+                    log("failed to load parfile line:", line, "due to", repr(ex))
 
 
     def findparfile(self,toolname,onlysys=True):

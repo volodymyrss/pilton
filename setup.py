@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
         name='pilton',
-        version='1.0',
+        version='1.0.1',
         py_modules= ['pilton','bcolors'],
         package_data     = {
             "": [
