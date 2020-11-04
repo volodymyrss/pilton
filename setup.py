@@ -2,8 +2,8 @@ from setuptools import setup
 
 setup(
         name='pilton',
-        version='1.0.1',
-        py_modules= ['pilton','bcolors'],
+        version='1.0.2',
+        py_modules= ['pilton'],
         package_data     = {
             "": [
                 "*.txt",
