@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
         name='pilton',
-        version='1.0.2',
+        version='1.1.0',
         py_modules= ['pilton'],
         package_data     = {
             "": [
