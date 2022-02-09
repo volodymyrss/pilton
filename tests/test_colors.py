@@ -1,5 +1,5 @@
 
 def test_upper():
-    import bcolors
-    print(bcolors.render("{RED}RED!{/}"))
+    from pilton import bcolors, render
+    print(render("{RED}RED!{/}"))
 

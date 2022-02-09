@@ -239,8 +239,6 @@ class pars:
         log("PFILES:",pfiles_str)
         log("toolsdir:",tooldir)
 
-        #os.system("hostname") ####!!!!
-        #os.system("ls /workdir/soft/astrohe/osa/10.0/x86_64/osa/pfiles") ####!!!
         raise Exception("no parfile: no tool?!")
 
     def mkargs(self,quote=False):
@@ -317,13 +315,14 @@ class heatool:
 
         self.getpars()
         self.cwd=os.getcwd() if wd is None else wd
+
         for arg in args:
             self.pars[arg]=args[arg]
 
     def getpars(self):
-        ps=pars()
-        ps.fromtoolname(self.toolname,onlysys=self.onlysyspar)
-        self.pars=ps
+        ps = pars()
+        ps.fromtoolname(self.toolname, onlysys=self.onlysyspar)
+        self.pars = ps 
 
     def __getitem__(self,name):
         return self.pars[name]
@@ -331,7 +330,9 @@ class heatool:
     def __setitem__(self,name,val):
         self.pars[name]=val
 
-    def run(self,pretend=False,envup=None,env=None,strace=None,stdout=None,pfileschroot=True,quiet=False):
+    def run(self, pretend=False, envup=None, env=None, 
+                  strace=None, stdout=None, pfileschroot=True, 
+                  quiet=False, use_envsyspfiles=True):
         log(render("{YEL} work dir to "+self.cwd+"{/}"))
         owd=get_cwd()
         os.chdir(self.cwd)
@@ -341,8 +342,12 @@ class heatool:
         if pretend:
             log("not actually running it")
             return
-        if env is None: env=self.environ
-        if envup is not None: env.update(envup)
+
+        if env is None: 
+            env=self.environ.copy()
+        
+        if envup is not None:
+            env.update(envup)
 
         if strace is not None:
             tr=["strace"]
@@ -355,7 +360,14 @@ class heatool:
         if pfileschroot:
             log("requested to create temporary user pfiles directory")
             pfiles_user_temp=tempfile.mkdtemp(os.path.basename(self.pars.pfile))
-            pf_env=dict(PFILES=pfiles_user_temp+";"+os.path.dirname(self.pars.pfile))
+
+            if use_envsyspfiles:
+                env_syspfiles = os.getenv('PFILES', "").split(';')[-1].split(":")
+                syspfiles = [os.path.dirname(self.pars.pfile)] + env_syspfiles
+                log(render('{BLUE}will attach syspfiles:' + str(env_syspfiles) + '{/}'))
+                pf_env=dict(PFILES=pfiles_user_temp+";"+ ":".join(syspfiles))
+            else:
+                pf_env=dict(PFILES=pfiles_user_temp+";"+os.path.dirname(self.pars.pfile))
         else:
             pf_env=dict(PFILES=os.path.dirname(self.pars.pfile)) # how did this even work?..
 
