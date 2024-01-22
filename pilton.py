@@ -1,5 +1,3 @@
-
-
 import sys
 import os
 import time
@@ -35,7 +33,7 @@ class bcolors:
         self.WARNING = ''
         self.FAIL = ''
         self.ENDC = ''
-
+        
 
 def render(*strings):
     result = ""
@@ -94,7 +92,6 @@ class par:
         sub = re.sub("\".*?\"", "{quoted}", parline)
 
         m = re.findall("^(.*?),(.*?),(.*?),(.*?),(.*?),(.*?),\"?(.*)\"?", sub)
-
         m[0] = [_m.strip() for _m in m[0]]
         for field in 'name', 'type', 'mode', 'default', 'min', 'max', 'prompt':
             f = m[0][0]
@@ -194,8 +191,7 @@ class pars:
         log("from parfile:", parfilename, logtype="debug")
         for line in open(self.pfile, "rb"):
             line = line.decode('utf-8', 'ignore')
-
-            if not re.match("^#", line) and line != "":
+            if not re.match("^#", line) and len(line) > 1:
                 try:
                     p = par(parline=line)
                     self.pars.append(p)
